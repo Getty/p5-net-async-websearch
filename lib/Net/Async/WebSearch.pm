@@ -493,13 +493,16 @@ sub search_race {
   my $loop = IO::Async::Loop->new;
   my $ws = Net::Async::WebSearch->new(
     providers => [
-      Net::Async::WebSearch::Provider::DuckDuckGo->new,
+      Net::Async::WebSearch::Provider::DuckDuckGo->new(
+        tags => ['free'],
+      ),
       Net::Async::WebSearch::Provider::SearxNG->new(
         endpoint => 'https://searxng.example.org',
+        tags     => ['free', 'private'],
       ),
       Net::Async::WebSearch::Provider::Serper->new(
         api_key => $ENV{SERPER_API_KEY},
-        enabled => 0,   # off by default, opt-in per query with only=>[...]
+        tags    => ['paid'],
       ),
     ],
   );
@@ -509,7 +512,7 @@ sub search_race {
   my $out = $ws->search(
     query   => 'handyintelligence AI consulting',
     limit   => 20,
-    exclude => ['serper'],
+    exclude => ['paid'],    # skip Serper (and any other 'paid' provider)
   )->get;
   # $out->{results}  — arrayref of Net::Async::WebSearch::Result, ranked
   # $out->{errors}   — [{ provider, error }, ...]
@@ -524,7 +527,7 @@ sub search_race {
   )->get;
 
   # Race mode: resolve with whichever provider returns first.
-  my $fast = $ws->search( query => 'handyintelligence', mode => 'race', only => [qw( brave serper )] )->get;
+  my $fast = $ws->search( query => 'handyintelligence', mode => 'race', only => ['free'] )->get;
   # $fast->{provider} — name of winning provider
 
 =head1 DESCRIPTION
@@ -741,20 +744,24 @@ Selectors — in C<only>, C<exclude>, and C<provider_opts> keys — match agains
 three things on each provider: its C<name>, its class leaf (lowercased), and
 any of its C<tags>. So:
 
-  Net::Async::WebSearch::Provider::SearxNG->new(
-    name     => 'searx-eu',
-    endpoint => 'https://searx.eu.example',
-    tags     => ['private', 'eu'],
-  );
-  Net::Async::WebSearch::Provider::Serper->new(
-    name    => 'serper-primary',
-    api_key => $KEY1,
-    tags    => ['paid', 'google-backed'],
-  );
-  Net::Async::WebSearch::Provider::Serper->new(
-    name    => 'serper-backup',
-    api_key => $KEY2,
-    tags    => ['paid', 'google-backed'],
+  my $ws = Net::Async::WebSearch->new(
+    providers => [
+      Net::Async::WebSearch::Provider::SearxNG->new(
+        name     => 'searx-eu',
+        endpoint => 'https://searx.eu.example',
+        tags     => ['private', 'eu'],
+      ),
+      Net::Async::WebSearch::Provider::Serper->new(
+        name    => 'serper-primary',
+        api_key => $KEY1,
+        tags    => ['paid', 'google-backed'],
+      ),
+      Net::Async::WebSearch::Provider::Serper->new(
+        name    => 'serper-backup',
+        api_key => $KEY2,
+        tags    => ['paid', 'google-backed'],
+      ),
+    ],
   );
 
   $ws->search( query => $q, exclude => ['paid'] );        # both Serpers skipped

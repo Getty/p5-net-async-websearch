@@ -1,4 +1,4 @@
-{{$NEXT}}
+0.001     2026-04-18 15:30:31Z
 
  - Initial release
  - IO::Async web search aggregator across pluggable providers

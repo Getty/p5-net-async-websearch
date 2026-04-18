@@ -1,5 +1,5 @@
 package Net::Async::WebSearch::Result;
-our $VERSION = '0.002';
+our $VERSION = '0.003';
 # ABSTRACT: Single web search result record
 use strict;
 use warnings;

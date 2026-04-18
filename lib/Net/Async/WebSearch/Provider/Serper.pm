@@ -1,5 +1,5 @@
 package Net::Async::WebSearch::Provider::Serper;
-our $VERSION = '0.002';
+our $VERSION = '0.003';
 # ABSTRACT: Serper.dev Google Search API provider
 use strict;
 use warnings;

@@ -1,4 +1,5 @@
 package Net::Async::WebSearch::Provider::SearxNG;
+our $VERSION = '0.002';
 # ABSTRACT: SearxNG/Searx JSON endpoint provider
 use strict;
 use warnings;

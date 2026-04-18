@@ -1,4 +1,5 @@
 package Net::Async::WebSearch::Provider;
+our $VERSION = '0.002';
 # ABSTRACT: Base class for Net::Async::WebSearch providers
 use strict;
 use warnings;

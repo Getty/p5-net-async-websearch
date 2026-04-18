@@ -1,4 +1,5 @@
 package Net::Async::WebSearch::Provider::DuckDuckGo;
+our $VERSION = '0.002';
 # ABSTRACT: DuckDuckGo HTML endpoint provider (keyless)
 use strict;
 use warnings;

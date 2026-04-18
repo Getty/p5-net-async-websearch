@@ -1,5 +1,12 @@
 {{$NEXT}}
 
+0.002     2026-04-18
+
+ - POD documentation: clarified provider instantiation and registration examples
+ - SYNOPSIS now shows consistent provider stack with tags (free, paid)
+ - Stacking providers example: fixed to show proper registration flow
+ - Removed confusing enabled=>0 pattern in examples; use exclude/only instead
+
 0.001     2026-04-18 15:30:31Z
 
  - Initial release

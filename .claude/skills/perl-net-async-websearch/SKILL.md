@@ -1,14 +1,6 @@
 ---
 name: perl-net-async-websearch
-description: |
-  Load when using Net::Async::WebSearch — the IO::Async multi-provider web
-  search aggregator that fans a single query out across DuckDuckGo, SearxNG,
-  Brave, Serper, Google CSE, Yandex, and Reddit, deduplicates by normalized
-  URL, and merges via Reciprocal Rank Fusion. Covers the three modes
-  (collect / stream / race), provider stacking with tags and name-collision
-  rules, selector semantics (only / exclude / provider_opts), the
-  Net::Async::WebSearch::Result contract, and the additive fetch=N body
-  retrieval with its concurrency knobs.
+description: "Load when using Net::Async::WebSearch — multi-provider search across DuckDuckGo, SearxNG, Brave, Serper, Google CSE, Yandex and Reddit: the collect/stream/race modes, provider stacking, result contract."
 ---
 
 # Net::Async::WebSearch

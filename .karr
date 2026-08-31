@@ -1,0 +1,6 @@
+claude: true
+prompt: >-
+  Work the Net::Async::WebSearch karr board. Pick the highest-priority actionable
+  ticket, delegate implementation to the net-async-websearch-worker agent, verify with
+  `dzil test`, and hand the ticket to review. Never run `dzil release`. Do not act on
+  GitHub issues. Record any drift you find as new tickets rather than expanding scope.

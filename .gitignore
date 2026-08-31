@@ -12,6 +12,8 @@
 !.claude/skills/**
 !.claude/hooks/
 !.claude/hooks/**
+!.claude/rules/
+!.claude/rules/**
 
 # Local overrides (machine-specific)
 .claude/*.local.*
@@ -37,3 +39,7 @@ Makefile.old
 blib/
 MYMETA.*
 /searxng/
+
+# karr materialized task view -- never commit
+tasks/
+config.yml

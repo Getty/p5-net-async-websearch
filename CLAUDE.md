@@ -1,37 +1,30 @@
-# CLAUDE.md
+# CLAUDE.md — Net::Async::WebSearch
 
-Projekt-Guide für `Net::Async::WebSearch`. Die Workspace-Regeln in `../CLAUDE.md` gelten zusätzlich.
+IO::Async-based multi-provider web-search aggregator. One query fans out in parallel to
+DuckDuckGo, SearxNG, Brave, Serper, Google CSE, Yandex and Reddit, is deduplicated by
+normalized URL, and merged via Reciprocal Rank Fusion. Every provider is a strategy object
+over one shared `Net::Async::HTTP`; the orchestrator (`lib/Net/Async/WebSearch.pm`) offers
+`collect` / `stream` / `race` modes and an additive `fetch => N` body-retrieval step.
 
-## Was ist das?
+Build and test: `dzil test` (full suite, mock-driven, no network); `prove -lv t/NN-name.t`
+for a single file. `t/50-live.t` hits real providers and stays skipped unless
+`TEST_WEBSEARCH_LIVE=1` (plus per-provider `TEST_WEBSEARCH_*` keys) is set. Never
+`dzil release` without explicit permission.
 
-IO::Async-basierter Multi-Provider Web-Search-Aggregator. Eine Query fächert parallel zu DuckDuckGo, SearxNG, Brave, Serper, Google CSE, Yandex und Reddit, dedupliziert per normalisierter URL und merged via Reciprocal Rank Fusion.
+## Delegation
 
-Für API-Details, Modi (collect/stream/race), Selector-Semantik und das fetch=N Body-Retrieval → Skill `perl-net-async-websearch` laden.
+Delegate behavior-relevant code to the right agent instead of touching it yourself — the
+principle, the lanes and this repo's hazards are in
+`.claude/rules/net-async-websearch-rules.md`.
 
-## Layout
+| Task | Agent |
+|---|---|
+| Implement / refactor / debug anything under `lib/` or a provider | `net-async-websearch-worker` (default) |
+| Pre-release audit | `net-async-websearch-release-checker` |
 
-- `lib/Net/Async/WebSearch.pm` — Orchestrator
-- `lib/Net/Async/WebSearch/Provider.pm` — Provider Base Class
-- `lib/Net/Async/WebSearch/Provider/*.pm` — ein Modul pro Backend
-- `lib/Net/Async/WebSearch/Result.pm` — Result-Contract
-- `ex/search.pl` — Beispiel-CLI; `ex/searxng/` + `docker-compose.searxng.yml` für lokalen SearxNG
-- `t/50-live.t` — Live-Tests (brauchen API-Keys, normalerweise übersprungen)
-
-## Build & Test
-
-```bash
-dzil test              # volle Dist::Zilla Testsuite
-prove -lv t/10-aggregation.t
-```
-
-Release läuft via `[@Author::GETTY]` Bundle (siehe `dist.ini`). Für Release-Workflow → Skill `perl-release-author-getty`.
-
-## Async-Konventionen
-
-IO::Async + Future/Future::AsyncAwait. Bei Lifecycle-/Cancellation-/Retention-Fragen → Skill `perl-io-async-future`.
-
-## Neuen Provider hinzufügen
-
-1. `lib/Net/Async/WebSearch/Provider/Foo.pm` als Subclass von `Net::Async::WebSearch::Provider`
-2. Result-Contract aus `Result.pm` einhalten (normalisierte URL!)
-3. Test in `t/` mit gemockten Responses; Live-Call höchstens nach `t/50-live.t`-Muster
+The agents carry their conventions via `briefing.skills` (see `.claude/agents/`); the main
+agent delegates rather than loading them. Skill sources live under `.claude/skills/` —
+`net-async-websearch-core` holds the distribution architecture (provider mesh, RRF merge,
+URL dedup, add-a-provider recipe), with `perl-io-async-future`, `getty-perl-core`,
+`getty-perl-release-author-getty` and `perl-release-dist-ini` alongside. Work is tracked on
+the local `karr` board.

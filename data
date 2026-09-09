@@ -1,0 +1,20 @@
+---
+claimed_at: 2026-09-09T08:30:44Z
+claimed_by: p5-net-async-websearch
+class: standard
+completed: 2026-09-09T08:30:44Z
+created: 2026-08-31T04:23:17Z
+id: 1
+priority: medium
+started: 2026-09-09T08:30:44Z
+status: done
+tags:
+- tests
+- providers
+title: Mock parse-tests per provider backend
+updated: 2026-09-09T08:30:44Z
+---
+
+Only t/50-live.t (key-gated, skipped by default) exercises the individual ::Provider:: backends. There are no offline mock tests asserting that DuckDuckGo (HTML), SearxNG/Brave/Serper/Google (JSON) and Yandex (XML) each parse a captured response into a correct Result list (url/title/snippet/rank, and normalized dedup key). Add a fixture-driven test per provider so a parse regression fails without network.
+
+2026-09-09 08:30 Added t/15-provider-parse.t, offline fixture-driven parse tests for all 7 provider backends, DuckDuckGo HTML, SearxNG Brave Serper Google Reddit JSON, Yandex XML. Each fixture is fed through the real search parse path via a do_request double, no loop no network no live vars. Asserts count, url title snippet rank, a characteristic mapped field, and the normalized dedup key via _normalize_url, with trailing-slash and fragment URLs so normalization is covered. Mutation test confirmed the tests are bound to the real parse code. dzil test green Files 9. Commit 99a2522.

@@ -1,0 +1,18 @@
+---
+claimed_at: 2026-09-09T08:30:58Z
+claimed_by: p5-net-async-websearch
+class: standard
+created: 2026-08-31T04:23:21Z
+id: 2
+priority: low
+status: backlog
+tags:
+- providers
+- google
+title: 'Google CSE: limit > 10 silently returns at most 10'
+updated: 2026-09-09T08:30:58Z
+---
+
+Provider/Google.pm caps num at 10 (the CSE per-call hard cap) and does not paginate via start=, so any search with limit > 10 yields at most 10 Google results even though the API supports paging. Either implement start-based pagination to satisfy larger limits, or document the cap explicitly as intended behavior. See lib/Net/Async/WebSearch/Provider/Google.pm around line 37/84.
+
+2026-09-09 08:15 Left OPEN by autonomous batch worker as a product design decision (GRENZE). The ticket itself poses an either or: implement start-based pagination so limit greater than 10 returns more than 10 Google results, OR document the 10-result CSE per-call cap as intended behavior. That is a maintainer call. Pagination means multiple CSE API calls per search with quota and latency cost and larger-limit semantics. Documenting as intended is zero cost but forecloses larger limits. Recommendation, if larger Google result counts matter implement start-based pagination around the num cap in Provider Google, otherwise document the cap in the POD. Not implemented here to avoid an eigenmaechtig product choice. Awaiting your decision.

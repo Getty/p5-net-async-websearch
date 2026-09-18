@@ -1,0 +1,18 @@
+---
+class: standard
+completed: 2026-09-18T16:17:04Z
+created: 2026-09-18T03:36:02Z
+id: 5
+priority: medium
+started: 2026-09-18T04:20:51Z
+status: done
+tags:
+- provider
+- feature
+title: Add Tavily search provider
+updated: 2026-09-18T16:17:04Z
+---
+
+New ::Provider::Tavily over the shared Net::Async::HTTP, JSON API (LLM/agent search, free tier). Follow add-a-provider recipe (net-async-websearch-core), map to Result contract, add fixture-driven parse test like t/15. Verify current Tavily API (endpoint/auth/params) against live docs before building.
+
+Fertig: Provider + eigener Fixture-Test gebaut und committet; volle dzil test PASS (118 Tests). Integration (README/POD/.env.example/Changes) folgt gesammelt.

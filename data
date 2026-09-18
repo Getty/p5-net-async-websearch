@@ -1,0 +1,19 @@
+---
+class: standard
+completed: 2026-09-18T16:31:12Z
+created: 2026-09-18T16:24:17Z
+id: 9
+priority: high
+started: 2026-09-18T16:24:22Z
+status: done
+tags:
+- release
+- docs
+- provider
+title: 'Integration: wire up 4 new providers (README/POD/.env.example/Changes)'
+updated: 2026-09-18T16:31:12Z
+---
+
+Tavily/Exa/Marginalia/Mojeek sind als .pm + Tests gebaut und committet (df5b52c,6fd0c56,a9bf63b,629963e). Noch fehlen die aufzählenden Doku-Dateien: README Provider-Tabelle + API-Key-Cheat-Sheet, Haupt-POD (SYNOPSIS + GETTING API KEYS + Summary), .env.example Key-Bloecke, Changes {{$NEXT}}-Bullets. Ehrliche Kennzeichnung: Mojeek kostenpflichtig/auf Anfrage; Marginalia public/E-Mail-Key, EN-Index, CC-BY-NC-SA. Delegiert an worker.
+
+Integration committet (584e8a4): README (beide Tabellen), Haupt-POD (GETTING API KEYS + Summary), .env.example, Changes (4 Bullets). Mojeek/Marginalia ehrlich gekennzeichnet. dzil test + RELEASE_TESTING dzil test --all PASS.

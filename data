@@ -1,0 +1,24 @@
+---
+class: standard
+completed: 2026-09-18T02:28:08Z
+created: 2026-09-18T02:25:55Z
+id: 3
+priority: high
+started: 2026-09-18T02:28:08Z
+status: done
+tags:
+- release
+- changes
+title: 'Changes: add {{$NEXT}} bullet for Google CSE pagination fix'
+updated: 2026-09-18T02:28:08Z
+---
+
+Pre-release audit finding (release-checker).
+
+Changes has an empty {{$NEXT}} section, but commit aa82213 ("Google CSE: page over start to satisfy limit > 10") changed public provider behavior since the 0.002 tag: Provider::Google search() previously hard-capped `num` at 10 and never paged, so any `limit > 10` silently returned at most 10 results. It now pages over the 1-based `start` index in blocks of up to 10, merging pages until the limit is met, the upstream page is empty, or the CSE 100-result ceiling is hit; the final page is sized to the exact remainder so the limit is never overshot.
+
+This is exactly the kind of public-behavior change (a provider search() seam) the house rule requires naming in Changes before release. Please add a bullet under {{$NEXT}} describing it (see commit aa82213 for full detail; t/45-google-pagination.t covers it).
+
+No other user-visible changes were found since 0.002 in the intervening commits (skills/CLAUDE.md/gitignore/karr infra is dev-tooling noise per house rule, correctly left out).
+
+Changes {{$NEXT}}-Bullet für Google-CSE-Pagination (Commit aa82213) ergaenzt. Release-Blocker aufgehoben.

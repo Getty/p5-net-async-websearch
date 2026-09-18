@@ -1,0 +1,19 @@
+---
+class: standard
+completed: 2026-09-18T03:39:29Z
+created: 2026-09-18T03:35:33Z
+id: 4
+priority: high
+started: 2026-09-18T03:36:51Z
+status: done
+tags:
+- test
+- provider
+- google
+title: Fix t/15-provider-parse.t Google subtest after CSE pagination
+updated: 2026-09-18T03:39:29Z
+---
+
+Cherry-picked from phase2 (commit 99a2522, 2026-09-09), t/15 fails at the Google (JSON) subtest (line 326): it predates the CSE pagination change aa82213 (2026-09-10) where search() now pages over start in 10-blocks. Delegated to net-async-websearch-worker: adapt the Google subtest do_request double / expected output to the pagination path, preserve test intent (parse path, Result fields, _normalize_url dedup key), do NOT touch Provider/Google.pm. dzil test must be fully green.
+
+Behoben in a0094f5 (worker): parse_via nimmt optionales limit, Google-Subtest nutzt limit=2 passend zur 2-Item-Fixture. dzil test PASS (69 Tests). phase2-Inhalt via cherry-pick 037bfff in main, Branch geloescht, main nach origin gepusht. Merge-Order-Drift, kein Provider-Bug.

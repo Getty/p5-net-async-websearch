@@ -1,0 +1,22 @@
+---
+class: standard
+completed: 2026-09-18T16:17:12Z
+created: 2026-09-18T03:36:06Z
+id: 6
+priority: medium
+started: 2026-09-18T04:20:55Z
+status: done
+tags:
+- provider
+- feature
+title: Add Exa search provider
+updated: 2026-09-18T16:17:12Z
+---
+
+New ::Provider::Exa, neural search JSON API. Same recipe + fixture test. Verify API docs first.
+
+2026-09-18 04:23 Implementing Provider::Exa (POST-JSON, x-api-key header, contents.text for snippets) plus t/17-exa.t offline fixture test, per Serper pattern.
+
+2026-09-18 04:26 Provider code + offline test landed in commit 6fd0c56 (lib/Net/Async/WebSearch/Provider/Exa.pm, t/17-exa.t). perl -c + prove t/17-exa.t both green (18/18). Snippet solved via contents.text=JSON->true in POST body; Exa per-result relevance score kept in extra (NOT the RRF score attr). Still needs the separate integration pass (out of my scope): add Exa to t/15 provider list, main-module POD/registration hints, README, .env.example, Changes bullet. No new cpanfile dep needed. NOTE: parallel-worker git race almost swept Marginalia files into this commit; recovered via pathspec commit.
+
+Fertig: Provider + eigener Fixture-Test gebaut und committet; volle dzil test PASS (118 Tests). Integration (README/POD/.env.example/Changes) folgt gesammelt.

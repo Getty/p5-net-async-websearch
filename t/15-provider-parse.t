@@ -53,8 +53,12 @@ my $ws = Net::Async::WebSearch->new;
 
 sub parse_via {
   my ( $provider, %mock ) = @_;
+  # The double replays the same fixture for every request; a paging provider
+  # (Google) would loop forever if asked for more than the fixture holds, so
+  # `limit` is per-call (default 10 keeps the single-request providers as-is).
+  my $limit = delete $mock{limit} // 10;
   return $provider->search(
-    Test::WS::ParseMockHTTP->new(%mock), $QUERY, { limit => 10 },
+    Test::WS::ParseMockHTTP->new(%mock), $QUERY, { limit => $limit },
   )->get;
 }
 
@@ -301,7 +305,12 @@ JSON
     api_key => 'test-key',
     cx      => 'test-cx',
   );
-  my $results = parse_via( $google, body => $json, ct => 'application/json' );
+  # CSE serves <=10 hits/call and pages over `start`; limit=2 matches the two
+  # fixture items so the real search() paging path makes exactly one call
+  # against the replay double (multi-page paging is covered in t/45).
+  my $results = parse_via(
+    $google, body => $json, ct => 'application/json', limit => 2,
+  );
 
   is scalar @$results, 2, 'two results parsed';
   is $results->[0]->provider, 'google', 'provider name on result';

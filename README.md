@@ -72,6 +72,10 @@ my $fast = $ws->search(
 | `Yandex`       | Yandex Cloud API key + `folderid`    | XML (via XML::LibXML) |
 | `Reddit`       | none                         | JSON (`/search.json`) |
 | `Reddit::OAuth`| OAuth2 client_credentials / password / installed / authorization_code + refresh_token | JSON against `oauth.reddit.com` — see the module POD for the full app-setup guide |
+| `Tavily`       | `Authorization: Bearer`      | JSON (POST), LLM/agent search |
+| `Exa`          | `x-api-key`                  | JSON (POST), neural search |
+| `Marginalia`   | `API-Key` (public key ok)    | JSON, independent English-only small-web index (results CC-BY-NC-SA) |
+| `Mojeek`       | `api_key` query param        | JSON (`fmt=json`), independent index (commercial key, on request) |
 
 ### Getting API keys — cheat sheet
 
@@ -85,6 +89,10 @@ my $fast = $ws->search(
 | **Yandex** | Cloud trial credits | no | [console.yandex.cloud/link/search-api/](https://console.yandex.cloud/link/search-api/) — needs Cloud folder + service account with `search-api.executor` |
 | Reddit (keyless) | rate-limited | no | — |
 | Reddit OAuth | 100 QPM per client_id, free | no | [reddit.com/prefs/apps](https://www.reddit.com/prefs/apps) |
+| **Tavily** | 1000 credits/month | no | [app.tavily.com](https://app.tavily.com) |
+| **Exa** | generous, self-service | no | [dashboard.exa.ai](https://dashboard.exa.ai) |
+| Marginalia | `public` key (rate-limited), or free key by e-mail | no | [contact@marginalia-search.com](mailto:contact@marginalia-search.com) — results CC-BY-NC-SA |
+| **Mojeek** | **none — commercial, on request** | n/a | [mojeek.com/…/web-search-api](https://www.mojeek.com/services/search/web-search-api/) (contact form) |
 
 ## Stacking providers
 

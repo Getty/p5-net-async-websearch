@@ -1,0 +1,18 @@
+---
+class: standard
+completed: 2026-09-18T16:17:21Z
+created: 2026-09-18T03:36:10Z
+id: 7
+priority: medium
+started: 2026-09-18T04:20:59Z
+status: done
+tags:
+- provider
+- feature
+title: Add Marginalia search provider
+updated: 2026-09-18T16:17:21Z
+---
+
+New ::Provider::Marginalia, independent small-web index, free JSON API (fits the free tag alongside DDG/SearxNG). Same recipe + fixture test. Verify API docs first.
+
+Fertig: Provider + eigener Fixture-Test gebaut und committet; volle dzil test PASS (118 Tests). Integration (README/POD/.env.example/Changes) folgt gesammelt.

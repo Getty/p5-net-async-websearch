@@ -1,8 +1,8 @@
 # CLAUDE.md — Net::Async::WebSearch
 
 IO::Async-based multi-provider web-search aggregator. One query fans out in parallel to
-DuckDuckGo, SearxNG, Brave, Serper, Google CSE, Yandex and Reddit, is deduplicated by
-normalized URL, and merged via Reciprocal Rank Fusion. Every provider is a strategy object
+DuckDuckGo, SearxNG, Brave, Serper, Google CSE, Yandex, Reddit, Tavily, Exa, Marginalia and
+Mojeek, is deduplicated by normalized URL, and merged via Reciprocal Rank Fusion. Every provider is a strategy object
 over one shared `Net::Async::HTTP`; the orchestrator (`lib/Net/Async/WebSearch.pm`) offers
 `collect` / `stream` / `race` modes and an additive `fetch => N` body-retrieval step.
 

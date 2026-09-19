@@ -1,0 +1,24 @@
+---
+claimed_at: 2026-09-19T00:32:48Z
+claimed_by: p5-net-async-websearch
+class: standard
+completed: 2026-09-19T03:44:35Z
+created: 2026-09-19T00:32:48Z
+id: 12
+priority: low
+started: 2026-09-19T03:40:25Z
+status: done
+tags:
+- tests
+- docs
+title: t/50-live.t not wired for Tavily/Exa/Marginalia/Mojeek
+updated: 2026-09-19T03:44:35Z
+---
+
+The "Wire up Tavily/Exa/Marginalia/Mojeek: README, POD, env, Changes" commit (584e8a4) updated .env.example with TEST_WEBSEARCH_TAVILY_API_KEY / TEST_WEBSEARCH_EXA_API_KEY / TEST_WEBSEARCH_MARGINALIA_API_KEY / TEST_WEBSEARCH_MOJEEK_API_KEY comments, documenting that these vars should gate live-test subtests the way every other provider (Brave, Serper, Google, Yandex, Reddit OAuth, SearxNG) has in t/50-live.t. But t/50-live.t itself was never updated — grep for tavily|exa|marginalia|mojeek in that file returns nothing. So the four new providers have no live-test path at all, despite .env.example implying one exists.
+
+Not a release blocker: dzil test is green via the mock-driven t/16-tavily.t..t/19-mojeek.t, and t/50-live.t still skips safely by default either way. Just an inconsistency between what .env.example promises and what the test file does — worth a follow-up so TEST_WEBSEARCH_TAVILY_API_KEY etc. actually do something.
+
+Decision (maintainer): wire ALL FOUR new providers in t/50-live.t, each gated behind its own TEST_WEBSEARCH_*_API_KEY (uniform with Brave/Serper/Google/Yandex). Mojeek (commercial, no free/public key) gets a subtest too but skips whenever the key is unset -> 'paid API out of luck', .env.example stays honest, a paying user can test immediately. Marginalia gated by TEST_WEBSEARCH_MARGINALIA_API_KEY (NOT TEST_WEBSEARCH_LIVE) despite its api_key defaulting to 'public', to avoid hammering the shared rate-limited public key on casual keyless runs; set the var to 'public' to exercise the shared endpoint. All four expose api_key (confirmed). Delegated to net-async-websearch-worker.
+
+Done & verified by orchestrator. Diff = 2 files: t/50-live.t (+4 gated per-provider subtests after Yandex, aggregation subtest untouched) + .env.example (Marginalia 'public' hint). No POD fix needed (all four already had correct =attr api_key; author-pod-syntax.t green). Verified independently: keyless prove -lv t/50-live.t with all TEST_WEBSEARCH_* scrubbed -> skipped/NOTESTS, 0 network; full dzil test -> 14 files/125 tests PASS, t/50-live.t skipped. No Changes bullet (internal test/doc; the 4 providers already carry {{$NEXT}} bullets from 584e8a4). NOT committed - awaiting maintainer go-ahead.

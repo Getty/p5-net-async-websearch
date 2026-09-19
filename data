@@ -1,0 +1,29 @@
+---
+claimed_at: 2026-09-19T00:53:06Z
+claimed_by: p5-net-async-websearch
+class: standard
+completed: 2026-09-19T00:53:06Z
+created: 2026-09-19T00:32:37Z
+id: 11
+priority: high
+started: 2026-09-19T00:53:06Z
+status: done
+tags:
+- release
+- build
+- privacy
+title: 'dzil build ships internal agent tooling to CPAN: CLAUDE.md, .claude/, .karr'
+updated: 2026-09-19T00:53:06Z
+---
+
+Pre-release audit for the Tavily/Exa/Marginalia/Mojeek batch (post-584e8a4) found that `dzil build` bundles CLAUDE.md, the whole .claude/ tree (agents/, rules/, skills/ — 18 files, ~164K, includes full skill bodies like kanban-issues-karr-cli references), and .karr into the tarball (confirmed via MANIFEST + diffing built CLAUDE.md against the repo copy — byte-identical). dist.ini has no [PruneFiles]/exclude for any of these; @Author::GETTY does not filter them either. Git::GatherDir gathers every tracked file, and all of these are tracked.
+
+None of these three existed at the 0.002 tag (verified: `git ls-tree -r --name-only 0.002 | grep -i claude` -> empty; CLAUDE.md/.claude/.karr were added afterward in 9c7cdf6 and 833b8ea). So this release would be the FIRST to publish them to PAUSE/CPAN — permanently mirrored, hard to retract. .env.example already shipped at 0.002 so is unaffected/no new exposure there.
+
+Corrects an assumption in k10 ("does not ship to CPAN") — it does; see k10 note.
+
+Suggested fix: add a [PruneFiles] (or similar) block to dist.ini excluding CLAUDE.md, .claude/**, .karr, ex/ (ex/ also ships full docker-compose/searxng config, lower concern) before the next release, or untrack these paths from git if they should never be gathered at all.
+
+Not something the release-checker should implement — flagging for the worker/maintainer per lane rules.
+
+Maintainer-Entscheidung (2026-09-19): kein PruneFiles fuer .claude/, CLAUDE.md, .karr. Das Shippen dieser Dateien ins CPAN-Bundle ist gewollt/wird vom Bundle so gehandhabt, kein Bug. Schliesse als wontfix.

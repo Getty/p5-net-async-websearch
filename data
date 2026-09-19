@@ -1,0 +1,21 @@
+---
+claimed_at: 2026-09-19T00:32:44Z
+claimed_by: p5-net-async-websearch
+class: standard
+completed: 2026-09-19T03:35:41Z
+created: 2026-09-18T16:33:54Z
+id: 10
+priority: low
+started: 2026-09-19T03:35:41Z
+status: done
+tags:
+- docs
+title: 'Doc drift: CLAUDE.md provider list stale (7 vs 11 providers)'
+updated: 2026-09-19T03:35:41Z
+---
+
+CLAUDE.md line 4 says the orchestrator fans out to "DuckDuckGo, SearxNG, Brave, Serper, Google CSE, Yandex and Reddit" — 7 providers. Since commit 584e8a4 (Wire up Tavily/Exa/Marginalia/Mojeek) there are 11: the architecture-summary sentence needs the 4 new names added. Not a release blocker (prose only, does not ship to CPAN) — found during the post-584e8a4 pre-release audit. README.md and lib/Net/Async/WebSearch.pm POD are already correct/complete.
+
+2026-09-19 00:32 Correction from the post-584e8a4 pre-release audit: CLAUDE.md DOES ship to CPAN via dzil build (confirmed by diffing the built tarball's CLAUDE.md against the repo copy — identical; same for the whole .claude/ tree and .karr). Filed k(next) for that as the real, higher-priority issue. This card (doc-drift prose only) stands on its own as low-priority, but the 'does not ship to CPAN' premise in its body is wrong.
+
+Fixed: CLAUDE.md line 4 provider list now names all 11 (added Tavily, Exa, Marginalia, Mojeek). Prose-only edit by orchestrator.

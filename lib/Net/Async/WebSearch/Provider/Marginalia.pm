@@ -1,5 +1,5 @@
 package Net::Async::WebSearch::Provider::Marginalia;
-our $VERSION = '0.003';
+our $VERSION = '0.004';
 # ABSTRACT: Marginalia Search API provider
 use strict;
 use warnings;

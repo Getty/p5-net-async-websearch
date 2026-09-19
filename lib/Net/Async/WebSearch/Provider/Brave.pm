@@ -1,5 +1,5 @@
 package Net::Async::WebSearch::Provider::Brave;
-our $VERSION = '0.003';
+our $VERSION = '0.004';
 # ABSTRACT: Brave Search API provider
 use strict;
 use warnings;

@@ -1,5 +1,5 @@
 package Net::Async::WebSearch::Provider::Mojeek;
-our $VERSION = '0.003';
+our $VERSION = '0.004';
 # ABSTRACT: Mojeek Search API provider
 use strict;
 use warnings;

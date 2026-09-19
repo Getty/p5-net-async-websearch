@@ -1,5 +1,5 @@
 package Net::Async::WebSearch::Provider::Google;
-our $VERSION = '0.003';
+our $VERSION = '0.004';
 # ABSTRACT: Google Programmable Search (CSE) JSON API provider
 use strict;
 use warnings;

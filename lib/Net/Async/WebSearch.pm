@@ -14,7 +14,7 @@ use URI ();
 use Net::Async::WebSearch::Provider ();
 use Net::Async::WebSearch::Result ();
 
-our $VERSION = '0.003';
+our $VERSION = '0.004';
 
 # Reciprocal Rank Fusion constant (Cormack et al.)
 our $RRF_K = 60;

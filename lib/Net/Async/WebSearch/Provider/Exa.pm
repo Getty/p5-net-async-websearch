@@ -1,5 +1,5 @@
 package Net::Async::WebSearch::Provider::Exa;
-our $VERSION = '0.003';
+our $VERSION = '0.004';
 # ABSTRACT: Exa neural search API provider
 use strict;
 use warnings;

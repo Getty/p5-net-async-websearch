@@ -1,5 +1,5 @@
 package Net::Async::WebSearch::Provider::Tavily;
-our $VERSION = '0.003';
+our $VERSION = '0.004';
 # ABSTRACT: Tavily Search API provider
 use strict;
 use warnings;

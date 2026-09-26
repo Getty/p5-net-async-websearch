@@ -20,7 +20,7 @@ principle, the lanes and this repo's hazards are in
 | Task | Agent |
 |---|---|
 | Implement / refactor / debug anything under `lib/` or a provider | `net-async-websearch-worker` (default) |
-| Pre-release audit | `net-async-websearch-release-checker` |
+| Commits, `Changes`, card → done, pre-release audit | `net-async-websearch-release-manager` |
 
 The agents carry their conventions via `briefing.skills` (see `.claude/agents/`); the main
 agent delegates rather than loading them. Skill sources live under `.claude/skills/` —

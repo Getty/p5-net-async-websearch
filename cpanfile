@@ -6,7 +6,9 @@ requires 'JSON::MaybeXS', '1.004005';
 requires 'URI', '5.00';
 requires 'URI::Escape', '5.00';
 requires 'HTML::TreeBuilder', '5.07';
+requires 'HTTP::Request', '6.00';
 requires 'HTTP::Request::Common', '6.00';
+requires 'IO::Async::SSL', '0.12';
 requires 'XML::LibXML', '2.0200';
 
 on test => sub {

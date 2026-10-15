@@ -4,6 +4,8 @@
    request that does not answer in time is cancelled and reported in
    `errors`, so one stalled provider no longer blocks `search` forever
    (off by default)
+ - `fetch_max_bytes` now aborts the transfer once the limit is reached
+   instead of downloading the whole body first; the limit counts wire bytes
  - cpanfile declares IO::Async::SSL (every built-in endpoint is https and
    Net::Async::HTTP does not pull it in) and HTTP::Request
 

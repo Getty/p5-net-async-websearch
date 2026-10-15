@@ -158,10 +158,42 @@ sub _fetch_one {
   if ( defined $args{timeout} ) {
     $req_args{timeout} = $args{timeout};
   }
-  # NB: max_bytes is enforced on the decoded body below — Net::Async::HTTP
-  # does not cap the on-the-wire body length itself.
+  # Net::Async::HTTP does not cap the body itself: with max_bytes we take the
+  # body chunks ourselves and cancel the transfer once the limit is reached,
+  # so an endless or huge response is never buffered in full. The decoded
+  # body is still cut below as a safety net.
+  my $out = Future->new;
+  if ( defined $args{max_bytes} ) {
+    my $limit = $args{max_bytes};
+    my $req_f;
+    $req_args{on_header} = sub {
+      my ( $resp ) = @_;
+      my $got = 0;
+      return sub {
+        return $resp unless @_;
+        return if $out->is_ready;
+        my $chunk = $_[0];
+        my $room  = $limit - $got;
+        $chunk = substr( $chunk, 0, $room ) if length $chunk > $room;
+        $got += length $chunk;
+        $resp->add_content($chunk);
+        if ( $got >= $limit ) {
+          $out->done($resp);
+          $req_f->cancel if $req_f && !$req_f->is_ready;
+        }
+        return;
+      };
+    };
+    $req_f = $self->http->do_request(%req_args);
+    $req_f->on_done(sub { $out->done(@_) unless $out->is_ready })
+          ->on_fail(sub { $out->fail(@_) unless $out->is_ready });
+    $out->on_cancel(sub { $req_f->cancel unless $req_f->is_ready });
+  }
+  else {
+    $out = $self->http->do_request(%req_args);
+  }
 
-  return $self->http->do_request(%req_args)->then(sub {
+  return $out->then(sub {
     my ( $resp ) = @_;
     my $ct      = $resp->header('Content-Type');
     my $charset = ( $ct && $ct =~ /charset=([^\s;]+)/ ) ? lc $1 : undef;
@@ -769,7 +801,12 @@ different names pointing at the same CDN edge are counted separately.
 =item * C<fetch_timeout> — seconds per request, passed straight to
 L<Net::Async::HTTP>.
 
-=item * C<fetch_max_bytes> — truncate the response body to this many bytes.
+=item * C<fetch_max_bytes> — stop reading the response body after this many
+bytes (counted on the wire, before charset or content-encoding decoding). The
+transfer is aborted once the limit is reached, so a huge or endless response is
+not buffered in full; the body is whatever arrived up to the limit. Without it
+(the default) the whole body is downloaded. Combine with C<fetch_timeout> to
+bound the time as well.
 
 =item * C<fetch_user_agent> — User-Agent for fetch requests. Default is the
 library's own UA; set it to something representative if you care about

@@ -1,0 +1,28 @@
+---
+class: standard
+completed: 2026-10-15T04:48:01Z
+created: 2026-10-06T19:46:56Z
+id: 13
+priority: medium
+started: 2026-10-15T03:14:49Z
+status: done
+tags:
+- bug
+- async
+- timeout
+- review-2026-10-06
+title: Provider searches have no timeout - one stalled provider blocks search() in
+  collect mode forever
+updated: 2026-10-15T04:48:01Z
+---
+
+The only timeout in the distribution is `fetch_timeout` for the optional page fetch (`lib/Net/Async/WebSearch.pm:156-157, 206`). The provider requests themselves carry none: `grep -rn timeout lib/Net/Async/WebSearch/Provider.pm lib/Net/Async/WebSearch/Provider/` is empty, and the shared Net::Async::HTTP is built without one (`WebSearch.pm:91-95`). `search` in the default `collect` mode waits for all providers with `Future->needs_all(@wrapped)` (`WebSearch.pm:286`); a provider failure is converted into an error entry, but a provider that accepts the connection and never answers produces no failure at all.
+
+Effect: with 11 providers behind third-party endpoints, one hanging endpoint keeps the whole aggregated search pending indefinitely, although the results of the others are already there.
+
+Done when: there is a per-provider timeout (constructor default, overridable per `search` call) applied to every provider request, a timed-out provider shows up in `errors` like any other failure, and a test with a never-resolving mock http covers it.
+
+---
+Fleet review 2026-10-06 · kind: bug · confidence: verified
+
+2026-10-15 03:18 Done (Branch worktree-backlog-k13-k15, a1606e2): provider_timeout (Konstruktor + je search-Aufruf, 0/undef = aus), angewandt in _dispatch fuer alle drei Modi; Timeout -> Future fail -> erscheint in errors, haengender Request wird gecancelt (wait_any). Test t/21-provider-timeout.t gegen altes lib/ rot (Guard: search haengt), neu gruen; prove -lr t gruen (50-live skipped). VON GETTY ZU BESTAETIGEN: Default ist bewusst AUS (abwaertskompatibel), die Karte verlangt einen Konstruktor-Default. Empfehlung: 30s - Verhaltenswechsel (langsame Provider werden zu errors). Worker-Agent war per briefing-Hook blockiert (unbekannte Skills perl-io-async-future/getty-perl-core/kanban-issues-karr-ticket), daher vom Orchestrator selbst umgesetzt.

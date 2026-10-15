@@ -1,0 +1,28 @@
+---
+class: standard
+completed: 2026-10-15T04:48:06Z
+created: 2026-10-06T19:47:11Z
+id: 14
+priority: medium
+started: 2026-10-15T03:14:50Z
+status: done
+tags:
+- hygiene
+- cpanfile
+- tls
+- review-2026-10-06
+title: 'cpanfile: IO::Async::SSL missing although every built-in provider endpoint
+  is https'
+updated: 2026-10-15T04:48:06Z
+---
+
+All default endpoints are https (`Provider/Exa.pm:17`, `Google.pm:20`, `DuckDuckGo.pm:16`, `Mojeek.pm:20`, `Tavily.pm:17`, `Reddit.pm:16`, ...). Net::Async::HTTP needs IO::Async::SSL for https and loads it only while connecting; it does not depend on it itself (its META lists no SSL module). `cpanfile` here declares neither `IO::Async::SSL` nor `IO::Socket::SSL`, so on a clean install every provider fails at connect time.
+
+Also undeclared, same-distribution and therefore harmless: `HTTP::Request` (used directly in `Provider/Serper.pm:11`, `Exa.pm:11`, `Tavily.pm:11`) and `HTTP::Response` in tests - only `HTTP::Request::Common` is listed.
+
+Done when: `requires 'IO::Async::SSL', '0.12'` (and `HTTP::Request`) are in `cpanfile`.
+
+---
+Fleet review 2026-10-06 · kind: hygiene · confidence: verified
+
+2026-10-15 03:18 Done (e9a8781): cpanfile requires IO::Async::SSL 0.12 und HTTP::Request 6.00. Test t/01-cpanfile.t gegen alte cpanfile rot, jetzt gruen; Suite gruen. Offen: dzil build nicht geprueft.

@@ -1,5 +1,10 @@
 {{$NEXT}}
 
+ - New `provider_timeout` (constructor and per `search` call): a provider
+   request that does not answer in time is cancelled and reported in
+   `errors`, so one stalled provider no longer blocks `search` forever
+   (off by default)
+
 0.003     2026-09-19 16:11:26Z
 
  - Google CSE provider now pages over `start` to satisfy `limit > 10`

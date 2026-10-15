@@ -30,6 +30,7 @@ sub _init {
   $self->{fetch_concurrency} = delete $args->{fetch_concurrency} // 100;
   $self->{fetch_concurrency_per_target_ip}
     = delete $args->{fetch_concurrency_per_target_ip} // 5;
+  $self->{provider_timeout}  = delete $args->{provider_timeout};
   $self->{fetch_timeout}     = delete $args->{fetch_timeout};
   $self->{fetch_max_bytes}   = delete $args->{fetch_max_bytes};
   $self->{fetch_user_agent}  = delete $args->{fetch_user_agent};
@@ -42,7 +43,7 @@ sub _init {
 sub configure_unknown {
   my ( $self, %args ) = @_;
   for my $k (qw(
-    http rrf_k default_limit per_provider_limit providers
+    http rrf_k default_limit per_provider_limit providers provider_timeout
     fetch_concurrency fetch_concurrency_per_target_ip
     fetch_timeout fetch_max_bytes fetch_user_agent
   )) {
@@ -53,6 +54,7 @@ sub configure_unknown {
 }
 
 sub providers         { @{ $_[0]->{providers} } }
+sub provider_timeout  { @_ > 1 ? ($_[0]->{provider_timeout} = $_[1]) : $_[0]->{provider_timeout} }
 sub rrf_k             { @_ > 1 ? ($_[0]->{rrf_k} = $_[1]) : $_[0]->{rrf_k} }
 sub default_limit     { @_ > 1 ? ($_[0]->{default_limit} = $_[1]) : $_[0]->{default_limit} }
 sub per_provider_limit{ @_ > 1 ? ($_[0]->{per_provider_limit} = $_[1]) : $_[0]->{per_provider_limit} }
@@ -240,6 +242,8 @@ sub _dispatch {
     safesearch => $args{safesearch},
   );
 
+  my $timeout = exists $args{provider_timeout}
+    ? $args{provider_timeout} : $self->provider_timeout;
   my $popts = $args{provider_opts} || {};
   my @futures;
   for my $p (@providers) {
@@ -250,9 +254,18 @@ sub _dispatch {
       next unless $p->matches($sel);
       %merged = ( %merged, %{ $popts->{$sel} } );
     }
+    my $f = $p->search( $self->http, $query, \%merged );
+    if ( defined $timeout && $timeout > 0 ) {
+      my $name = $p->name;
+      my $t = $self->loop->delay_future( after => $timeout )->then(sub {
+        Future->fail( "$name: timeout after ${timeout}s", 'websearch', $name );
+      });
+      # wait_any cancels the loser: the stalled request on timeout, the timer otherwise.
+      $f = Future->wait_any( $f, $t );
+    }
     push @futures, {
       provider => $p,
-      future   => $p->search( $self->http, $query, \%merged ),
+      future   => $f,
     };
   }
   return ( \@providers, \@futures );
@@ -828,6 +841,12 @@ any of its C<tags>. So:
 
 =item * C<rrf_k> — the RRF constant (default 60, as in Cormack et al.).
 
+=item * C<provider_timeout> — seconds each provider request may take before it
+is cancelled and reported in C<errors> like any other failure. Undefined (the
+default) or C<0> means no limit. Overridable per C<search> call. Applies to
+every mode; it does not bound the optional C<fetch> step (see
+C<fetch_timeout>).
+
 =back
 
 =method search(%args)
@@ -844,6 +863,9 @@ C<race> delegate to C<search_stream> / C<search_race>.
 =item * C<limit> — top-N merged results. Defaults to C<default_limit>.
 
 =item * C<per_provider_limit> — how many results to ask each provider for.
+
+=item * C<provider_timeout> — per-provider timeout in seconds for this call,
+overriding the constructor value; C<undef> or C<0> disables it.
 
 =item * C<only> — arrayref of selectors; restrict dispatch to providers
 matching any of them. A selector is a provider name, a class leaf

@@ -1,0 +1,24 @@
+---
+class: standard
+created: 2026-10-06T19:47:16Z
+id: 15
+priority: low
+started: 2026-10-15T03:14:51Z
+status: review
+tags:
+- async
+- fetch
+- memory
+- review-2026-10-06
+title: fetch_max_bytes truncates only after the whole body was downloaded and decoded
+updated: 2026-10-15T04:48:08Z
+---
+
+`_fetch_one` requests the complete response and cuts the decoded body afterwards (`lib/Net/Async/WebSearch.pm:159-170`; the comment there says so). The POD presents `fetch_max_bytes` as 'truncate the response body to this many bytes' (`WebSearch.pm:759`). With `fetch => N` the URLs come from search results, i.e. from arbitrary third parties, at up to `fetch_concurrency` (default 100) in parallel: a result pointing at a multi-gigabyte download or an endless stream is buffered in full, and without `fetch_timeout` it never ends. The limit also counts characters after charset decoding, not bytes.
+
+Done when: the fetch aborts the transfer once the limit is reached (Net::Async::HTTP `on_header`/body-chunk callback, or a `Range` request as a first step), a sane default `fetch_timeout` and `fetch_max_bytes` exist, and the POD states what is bounded.
+
+---
+Fleet review 2026-10-06 · kind: improvement · confidence: verified
+
+2026-10-15 03:18 Done (e5808e2): _fetch_one nimmt bei gesetztem fetch_max_bytes die Body-Chunks per on_header selbst und cancelt den Request beim Erreichen des Limits; Limit zaehlt Wire-Bytes. Test t/31-fetch-abort.t (Loopback-Server, endloser Body, kein externes Netz) gegen altes lib/ rot (Fetch endet nie), neu gruen; Suite gruen. VON GETTY ZU BESTAETIGEN: (a) Wire-Bytes statt dekodierter Zeichen; abgeschnittene gzip-Bodies evtl. nicht dekodierbar (Fallback auf Rohcontent wie bisher). (b) Defaults fuer fetch_timeout/fetch_max_bytes NICHT gesetzt (Verhaltenswechsel); Empfehlung z.B. 30s / 2 MiB. Randbefund: Mock in t/30 ignoriert on_header, Nachkuerzung des dekodierten Bodys bleibt als Sicherheitsnetz.

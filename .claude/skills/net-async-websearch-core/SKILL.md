@@ -9,6 +9,17 @@ description: "Architecture and internals of the Net::Async::WebSearch distributi
 fans it out to every registered provider in parallel, and either merges, streams,
 or races the results. Every public method returns a `Future`.
 
+## The delegation model — why the main agent delegates
+
+Two roles: `net-async-websearch-worker` (implement, refactor, debug, test) and
+`net-async-websearch-release-manager` (commit, `Changes`, card → done,
+pre-release audit). Both get their skills force-loaded via `briefing.skills`.
+The orchestrating main agent gets **no briefing** — it coordinates, inspects,
+plans, reviews diffs, runs tests and edits `Changes`/`README`, and delegates
+anything behavior-relevant. Reason: only the briefed agents see the
+provider-strategy mesh and the merge path in context; an unbriefed hand inside
+`lib/` would break exactly the invariants below. When in doubt, delegate.
+
 ## Layout
 
 - `lib/Net/Async/WebSearch.pm` — the orchestrator (~870 lines): registration,
@@ -138,8 +149,6 @@ body** in `_fetch_one` — `Net::Async::HTTP` does not cap the on-the-wire lengt
 
 ## Common pitfalls
 
-- Forgetting `$loop->add($ws)` → Futures hang (it is a Notifier; children are
-  added with the parent).
 - Expecting `$r->score` in `stream`/`race`, or `$r->fetched` without `fetch => N`.
 - Selecting by class leaf when several instances of that class exist — all match;
   use the exact `name` for one.
@@ -147,6 +156,15 @@ body** in `_fetch_one` — `Net::Async::HTTP` does not cap the on-the-wire lengt
 - Google CSE `limit > 10` needs multiple API calls (10-result cap per call).
 - Yandex needs `folderid` **and** a service account with role
   `search-api.executor` — missing either returns opaque auth errors.
+
+## The hazards in detail
+
+Why the house rules list these as traps:
+
+- **The loop is mandatory.** Without `$loop->add($ws)` every returned Future hangs with no error; providers are added as children with the parent, never added to the loop directly.
+- **The fetch cap is on the decoded body.** `Net::Async::HTTP` does not cap the on-the-wire length, so a "cap" that assumes it will leak memory.
+- **Live tests are key-gated on purpose.** Nobody hits real search APIs (and burns quota) by accident; the mock-driven suite is the only path.
+- **Versions are per-file and equal.** The bundle rewrites every package, so a per-file `$VERSION` is required and must not be collapsed to the main module; every `.pm` also needs a `# ABSTRACT:` line for PodWeaver.
 
 ## When NOT to load this skill
 

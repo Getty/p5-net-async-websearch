@@ -14,8 +14,8 @@ for a single file. `t/50-live.t` hits real providers and stays skipped unless
 ## Delegation
 
 Delegate behavior-relevant code to the right agent instead of touching it yourself — the
-principle, the lanes and this repo's hazards are in
-`.claude/rules/net-async-websearch-rules.md`.
+delegation lock is a shared house rule (skilletor bundle `getty-cpan-dist@getty`); the lanes
+and this repo's hazards are in `.claude/rules/net-async-websearch-rules.md`.
 
 | Task | Agent |
 |---|---|

@@ -446,7 +446,7 @@ Required (but may be the empty string for installed apps).
 C<client_credentials> (default, app-only), C<password> (script apps),
 C<installed> (device-id apps), or C<authorization_code> (user consent flow,
 typically driven by a host app — MCP server, web app, CLI — via
-L</authorize_url> and L</complete_authorization>).
+L</authorize_url(%args)> and L</complete_authorization(%args)>).
 
 =attr username
 
@@ -518,7 +518,7 @@ on the callback URL.
 Exchanges an authorization code for an access/refresh token pair. Required:
 C<http> (a L<Net::Async::HTTP> — typically C<< $ws->http >>), C<code> (the
 value from the redirect), and C<redirect_uri> (must match the one used in
-L</authorize_url>). Returns a Future of the access token; also populates
+L</authorize_url(%args)>). Returns a Future of the access token; also populates
 C<< $self->access_token >>, C<< $self->refresh_token >>, and
 C<< $self->token_expires_at >>, and fires C<on_token_refresh> if set.
 
@@ -538,7 +538,7 @@ persistence — this library does not persist anything on its own.
 Same contract as the parent provider — plus a transparent token fetch/refresh
 round-trip before the first search (and again when the cached token is about
 to expire). For C<authorization_code> grants without a seeded refresh_token,
-the caller must drive L</authorize_url> / L</complete_authorization> first;
+the caller must drive L</authorize_url(%args)> / L</complete_authorization(%args)> first;
 otherwise the first search will fail.
 
 =seealso

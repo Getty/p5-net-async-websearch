@@ -22,7 +22,7 @@ and this repo's hazards are in `.claude/rules/net-async-websearch-rules.md`.
 | Implement / refactor / debug anything under `lib/` or a provider | `net-async-websearch-worker` (default) |
 | Commits, `Changes`, card → done, pre-release audit | `net-async-websearch-release-manager` |
 
-The agents carry their conventions via `briefing.skills` (see `.claude/agents/`); the main
+The agents carry their conventions via `skills:` (see `.claude/agents/`); the main
 agent delegates rather than loading them. Skill sources live under `.claude/skills/` —
 `net-async-websearch-core` holds the distribution architecture (provider mesh, RRF merge,
 URL dedup, add-a-provider recipe), with `perl-io-async-future`, `getty-perl-core`,

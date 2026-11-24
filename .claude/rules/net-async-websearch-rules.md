@@ -59,4 +59,4 @@ The architecture — the provider mesh, the three search modes, RRF merge, URL d
 Result contract — lives in skill `net-async-websearch-core`; module loading, dependency
 pinning and house style in `getty-perl-core`; the `IO::Async`/Future lifecycle in
 `perl-io-async-future`; release conventions in `getty-perl-release-author-getty` +
-`perl-release-dist-ini` (force-loaded per lane via `briefing.skills`).
+`perl-release-dist-ini` (force-loaded per lane via `skills:`).

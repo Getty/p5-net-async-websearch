@@ -13,8 +13,8 @@ or races the results. Every public method returns a `Future`.
 
 Two roles: `net-async-websearch-worker` (implement, refactor, debug, test) and
 `net-async-websearch-release-manager` (commit, `Changes`, card → done,
-pre-release audit). Both get their skills force-loaded via `briefing.skills`.
-The orchestrating main agent gets **no briefing** — it coordinates, inspects,
+pre-release audit). Both get their skills force-loaded via `skills:`.
+The orchestrating main agent gets **no preloaded skills** — it coordinates, inspects,
 plans, reviews diffs, runs tests and edits `Changes`/`README`, and delegates
 anything behavior-relevant. Reason: only the briefed agents see the
 provider-strategy mesh and the merge path in context; an unbriefed hand inside
